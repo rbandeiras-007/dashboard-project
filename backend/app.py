@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, request, send_file, session
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_cors import CORS
-import psycopg2
+import psycopg
 import io
 import pandas as pd
 
@@ -94,7 +94,7 @@ from contextlib import contextmanager
 from datetime import date
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-import psycopg2
+import psycopg
 from psycopg2.extras import RealDictCursor
 
 

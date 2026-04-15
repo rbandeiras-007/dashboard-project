@@ -1,0 +1,10 @@
+Base de Dados dashboard_bd
+
+Quando a base de dados ficar criada, abre-a e copia estes dados:
+
+Host: dpg-d7g0k89j2pic7383nv30-a
+Port: 5432
+Database: dashboard_db_v6o3
+User: dashboard_user
+Password: KwbaBb0jnGfEeJbSqLFINhQ6tcjU0Sqw
+Internal Database URL: postgresql://dashboard_user:KwbaBb0jnGfEeJbSqLFINhQ6tcjU0Sqw@dpg-d7g0k89j2pic7383nv30-a/dashboard_db_v6o3

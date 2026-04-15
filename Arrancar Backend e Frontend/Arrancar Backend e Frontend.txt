@@ -1,0 +1,81 @@
+Arrancar Backend:
+
+Backend
+
+cd "C:\Users\Rafael\Desktop\Projeto Dashboards\dashboard_project_package\dashboard_project\backend"
+
+1. Abrir PowerShell
+
+Vai para a pasta backend:
+
+cd "C:\Users\Rafael\Desktop\Projeto Dashboards\dashboard_project_package\dashboard_project\backend"
+
+2. Ativar o ambiente virtual
+
+Se o teu ambiente se chama .venv:
+
+.\.venv\Scripts\Activate.ps1
+
+Se se chama venv:
+
+.\venv\Scripts\Activate.ps1
+
+3. Arrancar o backend
+python app.py
+
+4. Resultado esperado
+
+Deves ver algo como:
+
+Running on http://127.0.0.1:5000
+
+
+
+Arrancar Frontend:
+
+Frontend
+
+Se estás a abrir o frontend com Live Server ou porta 5500, tens 2 formas.
+
+Opção A — continuar como tens feito
+
+Abrir o index.html com o Live Server no VS Code.
+
+Opção B — arrancar por PowerShell com servidor simples
+
+Vai para a pasta frontend:
+
+cd "C:\Users\Rafael\Desktop\Projeto Dashboards\dashboard_project_package\dashboard_project\frontend"
+
+e corre:
+
+python -m http.server 5500
+
+Depois abre no browser:
+
+http://127.0.0.1:5500
+
+
+
+Forma recomendada para ti agora
+
+Janela 1 — backend
+cd "C:\Users\Rafael\Desktop\Projeto Dashboards\dashboard_project_package\dashboard_project\backend"
+.\.venv\Scripts\Activate.ps1
+python app.py
+Janela 2 — frontend
+cd "C:\Users\Rafael\Desktop\Projeto Dashboards\dashboard_project_package\dashboard_project\frontend"
+python -m http.server 5500
+
+
+Depois no browser:
+
+http://127.0.0.1:5500
+
+Se der erro ao ativar o .venv
+
+Se o PowerShell bloquear scripts, corre primeiro:
+
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+
+e depois ativa o ambiente virtual outra vez.

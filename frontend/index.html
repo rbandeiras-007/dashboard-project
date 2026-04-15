@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboards Interativos - Operacional & Técnico</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+</head>
+<body>
+  <div id="loadingOverlay" class="loading-overlay hidden">
+    <div class="loading-box">
+      <div class="spinner"></div>
+      <div class="loading-text">A carregar dashboard...</div>
+    </div>
+  </div>
+
+<div id="loginScreen" class="login-screen">
+  <div class="login-card">
+    <h2>Entrar no Dashboard</h2>
+    <p class="login-subtitle">Acesso seguro por perfil</p>
+
+    <div class="login-field">
+      <label for="loginEmail">Email</label>
+      <input type="email" id="loginEmail" placeholder="ex: admin@dashboard.local" />
+    </div>
+
+    <div class="login-field">
+      <label for="loginPassword">Palavra-passe</label>
+      <input type="password" id="loginPassword" placeholder="Introduza a palavra-passe" />
+    </div>
+
+    <button id="loginBtn" class="login-btn">Entrar</button>
+    <p id="loginError" class="login-error hidden"></p>
+  </div>
+</div>
+
+<div class="container hidden" id="appContainer">
+  <section class="header">
+    <h1>Projeto de Dashboards Interativos</h1>
+    <p>Visão executiva e técnica com indicadores operacionais, faturação, SLA, backlog e risco. Estrutura preparada para ligação segura a PostgreSQL através de API.</p>
+    
+    <div class="toolbar">
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="executive" id="tabExecutive">Dashboard Executivo</button>
+        <button class="tab-btn" data-tab="technical" id="tabTechnical">Dashboard Técnico</button>
+      </div>
+
+      <button id="logoutBtn" class="secondary">Logout</button>
+    </div>
+  </section>
+
+  <div class="export-actions">
+   <button id="btnExportExcel" style="background:#1d4ed8; color:white; border:none; padding:10px 16px; border-radius:10px; cursor:pointer; font-weight:600;">
+    Exportar Excel
+   </button>
+
+   <button id="btnExportPdf" style="background:#0f172a; color:white; border:none; padding:10px 16px; border-radius:10px; cursor:pointer; font-weight:600;">
+    Exportar PDF
+   </button>
+ </div>
+
+    <section class="filter-card">
+      <div class="section-title">Filtros Globais</div>
+      <div class="filter-grid">
+        <div>
+          <label for="clientFilter">Cliente</label>
+          <select id="clientFilter"><option value="">Todos</option></select>
+        </div>
+        <div>
+          <label for="orderStatusFilter">Estado Encomenda</label>
+          <select id="orderStatusFilter"><option value="">Todos</option></select>
+        </div>
+        <div>
+          <label for="projectStatusFilter">Estado Projeto</label>
+          <select id="projectStatusFilter"><option value="">Todos</option></select>
+        </div>
+        <div>
+          <label for="technicianFilter">Técnico</label>
+          <select id="technicianFilter"><option value="">Todos</option></select>
+        </div>
+        <div>
+          <label for="dateFrom">Data inicial</label>
+          <input type="date" id="dateFrom" />
+        </div>
+        <div>
+          <label for="dateTo">Data final</label>
+          <input type="date" id="dateTo" />
+        </div>
+        <div>
+          <label>&nbsp;</label>
+          <button id="applyFilters">Aplicar filtros</button>
+        </div>
+        <div>
+          <label>&nbsp;</label>
+          <button class="secondary" id="resetFilters">Repor filtros</button>
+        </div>
+      </div>
+    </section>
+
+    <div id="executiveView">
+      <div class="section-title">Visão Executiva</div>
+      <section class="kpi-grid">
+        <div class="card"><div class="label">Faturação Total</div><div class="value" id="kpiRevenue">—</div><div class="hint">Valor total de encomendas</div></div>
+        <div class="card"><div class="label">Nº Encomendas</div><div class="value" id="kpiOrders">—</div><div class="hint">Registos no período</div></div>
+        <div class="card"><div class="label">Taxa de Faturação</div><div class="value" id="kpiBillingRate">—</div><div class="hint">Valor faturado / total</div></div>
+        <div class="card"><div class="label">Encomendas em Atraso</div><div class="value" id="kpiLateOrders">—</div><div class="hint">Previstas e ainda não fechadas</div></div>
+        <div class="card"><div class="label">Nº Clientes</div><div class="value" id="kpiClients">—</div><div class="hint">Clientes ativos na análise</div></div>
+      </section>
+
+      <section class="grid-2">
+        <div class="table-card">
+          <h3>Top Clientes por Faturação</h3>
+          <div class="chart-wrap"><canvas id="topClientsChart"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <h3>Faturação por Estado</h3>
+          <div class="chart-wrap"><canvas id="revenueByStatusChart"></canvas></div>
+        </div>
+      </section>
+
+      <section class="grid-2">
+        <div class="chart-card">
+          <h3>Evolução da Faturação</h3>
+          <div class="chart-wrap"><canvas id="revenueTrendChart"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <h3>Funil de Encomendas</h3>
+          <div class="chart-wrap"><canvas id="funnelChart"></canvas></div>
+        </div>
+      </section>
+
+      <section class="table-card">
+        <h3>Tabela de Exceções</h3>
+        <table id="exceptionsTable">
+          <thead>
+            <tr><th>ID</th><th>Cliente</th><th>Estado</th><th>Valor</th><th>Data prevista</th><th>Dias atraso</th></tr>
+          </thead>
+          <tbody id="exceptionsTableBody"></tbody>
+        </table>
+      </section>
+    </div>
+
+    <div id="technicalView" class="hidden">
+      <div class="section-title">Visão Técnica</div>
+
+      <div id="technicalAlertsBanner" class="alerts-banner hidden">
+        <div id="technicalAlertsBannerText"></div>
+    </div>
+
+    <div class="alerts-audio-row">
+      <button id="toggleAlertSound" class="secondary">🔔 Ativar som de alerta</button>
+    </div>
+      
+    <section class="kpi-grid" style="grid-template-columns: repeat(6, minmax(160px, 1fr));">
+
+  <div class="card">
+    <div class="label">Projetos Ativos</div>
+    <div class="value" id="kpiActiveProjects">—</div>
+    <div class="hint">Planeado + em curso</div>
+  </div>
+
+  <div class="card">
+    <div class="label">Projetos em Risco</div>
+    <div class="value" id="kpiAtRiskProjects">—</div>
+    <div class="hint">Risco alto ou crítico</div>
+  </div>
+
+  <div class="card" id="criticalAlertsCard">
+    <div class="label">Alertas Críticos</div>
+    <div class="value" id="kpiCriticalAlerts">0</div>
+    <div class="hint">Projetos com prioridade máxima</div>
+  </div>
+
+  <div class="card" id="highAlertsCard">
+    <div class="label">Alertas Altos</div>
+    <div class="value" id="kpiHighAlerts">0</div>
+    <div class="hint">Projetos que requerem atenção</div>
+  </div>
+
+  <div class="card">
+    <div class="label">SLA Cumprido</div>
+    <div class="value" id="kpiSlaRate">—</div>
+    <div class="hint">% de cumprimento</div>
+  </div>
+
+  <div class="card">
+    <div class="label">Backlog Total</div>
+    <div class="value" id="kpiBacklog">—</div>
+    <div class="hint">Horas em backlog</div>
+  </div>
+</section>
+
+      <section class="grid-2-eq">
+        <div class="chart-card">
+          <h3>Projetos por Estado</h3>
+          <div class="chart-wrap"><canvas id="projectsByStatusChart"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <h3>Planeado vs Real</h3>
+          <div class="chart-wrap"><canvas id="plannedVsActualChart"></canvas></div>
+        </div>
+      </section>
+
+      <section class="grid-2-eq">
+        <div class="chart-card">
+          <h3>Backlog por Técnico</h3>
+          <div class="chart-wrap"><canvas id="workloadChart"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <h3>Motivos de Atraso</h3>
+          <div class="chart-wrap"><canvas id="delayReasonsChart"></canvas></div>
+        </div>
+      </section>
+
+      <section class="table-card">
+        <h3>Projetos em Risco / Atrasados</h3>
+        <table id="riskProjectsTable">
+          <thead>
+            <tr><th>ID</th><th>Projeto</th><th>Cliente</th><th>Técnico</th><th>Estado</th><th>Risco</th><th>%</th><th>Dias atraso</th><th>Motivo</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+    </div>
+
+    <div class="footer-note">Arquitetura recomendada: Frontend HTML → API Backend → PostgreSQL. Projeto preparado para adaptação ao modelo de dados real do cliente.</div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

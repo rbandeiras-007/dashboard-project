@@ -1,0 +1,4 @@
+Contas para testar
+admin@dashboard.local / Admin123!
+gestao@dashboard.local / Gestao123!
+tecnico@dashboard.local / Tecnico123!

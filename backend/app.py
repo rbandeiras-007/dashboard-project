@@ -1,10 +1,15 @@
 import os
-from flask import Flask, jsonify, request, send_file, session
-from werkzeug.security import generate_password_hash, check_password_hash
-from flask_cors import CORS
-import psycopg
 import io
+from contextlib import contextmanager
+from datetime import date
+
 import pandas as pd
+import psycopg
+from psycopg.rows import dict_row
+
+from flask import Flask, jsonify, request, send_file, session
+from flask_cors import CORS
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY", "dev-secret-change-this")
@@ -96,7 +101,6 @@ from datetime import date
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import psycopg
-from psycopg2.extras import RealDictCursor
 
 
 DB_CONFIG = {
@@ -112,13 +116,12 @@ API_PORT = int(os.getenv("API_PORT", "5000"))
 
 @contextmanager
 def get_conn():
+    conn = None
     try:
-        conn = psycopg2.connect(**DB_CONFIG)
+        conn = psycopg.connect(**DB_CONFIG)
         yield conn
-    except Exception as e:
-        return {"error": str(e)}
     finally:
-        if 'conn' in locals():
+        if conn is not None:
             conn.close()
 
 
@@ -207,7 +210,7 @@ def login():
         return jsonify({"error": "Email e palavra-passe são obrigatórios."}), 400
 
     with get_conn() as conn:
-        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+        with conn.cursor(row_factory=dict_row) as cur:
             cur.execute("""
                 SELECT user_id, full_name, email, password_hash, role, is_active
                 FROM users
@@ -261,7 +264,7 @@ def filters():
         return error
 
     with get_conn() as conn:
-        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+        with conn.cursor(row_factory=dict_row) as cur:
             cur.execute("SELECT client_id, client_name FROM clients ORDER BY client_name;")
             clients = cur.fetchall()
 
@@ -321,7 +324,7 @@ def executive_summary():
     """
 
     with get_conn() as conn:
-        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+        with conn.cursor(row_factory=dict_row) as cur:
             cur.execute(sql, params)
             row = cur.fetchone()
 
@@ -369,7 +372,7 @@ def revenue_trend():
     """
 
     with get_conn() as conn:
-        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+        with conn.cursor(row_factory=dict_row) as cur:
             cur.execute(sql, params)
             rows = cur.fetchall()
 
@@ -404,7 +407,7 @@ def revenue_by_status():
     """
 
     with get_conn() as conn:
-        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+        with conn.cursor(row_factory=dict_row) as cur:
             cur.execute(sql, params)
             rows = cur.fetchall()
 
@@ -443,7 +446,7 @@ def top_clients():
     """
 
     with get_conn() as conn:
-        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+        with conn.cursor(row_factory=dict_row) as cur:
             cur.execute(sql, params)
             rows = cur.fetchall()
 
@@ -480,7 +483,7 @@ def orders_summary():
     """
 
     with get_conn() as conn:
-        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+        with conn.cursor(row_factory=dict_row) as cur:
             cur.execute(sql, params)
             row = cur.fetchone()
 
@@ -518,7 +521,7 @@ def orders_by_status():
     """
 
     with get_conn() as conn:
-        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+        with conn.cursor(row_factory=dict_row) as cur:
             cur.execute(sql, params)
             rows = cur.fetchall()
 
@@ -560,7 +563,7 @@ def funnel():
     """
 
     with get_conn() as conn:
-        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+        with conn.cursor(row_factory=dict_row) as cur:
             cur.execute(sql, params)
             rows = cur.fetchall()
 
@@ -604,7 +607,7 @@ def exceptions():
     """
 
     with get_conn() as conn:
-        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+        with conn.cursor(row_factory=dict_row) as cur:
             cur.execute(sql, params)
             rows = cur.fetchall()
 
@@ -647,7 +650,7 @@ def technical_summary():
     """
 
     with get_conn() as conn:
-        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+        with conn.cursor(row_factory=dict_row) as cur:
             cur.execute(sql, params)
             row = cur.fetchone()
 
@@ -698,7 +701,7 @@ def projects_by_status():
     """
 
     with get_conn() as conn:
-        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+        with conn.cursor(row_factory=dict_row) as cur:
             cur.execute(sql, params)
             rows = cur.fetchall()
 
@@ -738,7 +741,7 @@ def planned_vs_actual():
     """
 
     with get_conn() as conn:
-        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+        with conn.cursor(row_factory=dict_row) as cur:
             cur.execute(sql, params)
             rows = cur.fetchall()
 
@@ -778,7 +781,7 @@ def workload_by_technician():
     """
 
     with get_conn() as conn:
-        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+        with conn.cursor(row_factory=dict_row) as cur:
             cur.execute(sql, params)
             rows = cur.fetchall()
 
@@ -817,7 +820,7 @@ def delay_reasons():
     """
 
     with get_conn() as conn:
-        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+        with conn.cursor(row_factory=dict_row) as cur:
             cur.execute(sql, params)
             rows = cur.fetchall()
 
@@ -868,7 +871,7 @@ def at_risk_projects():
     """
 
     with get_conn() as conn:
-        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+        with conn.cursor(row_factory=dict_row) as cur:
             cur.execute(sql, params)
             rows = cur.fetchall()
 

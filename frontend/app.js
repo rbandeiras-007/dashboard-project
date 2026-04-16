@@ -1,5 +1,5 @@
 
-const API_BASE = 'https://dashboard-backend.onrender.com/api';
+const API_BASE = 'https://dashboard-backend-ak2g.onrender.com/api';
 Chart.register(ChartDataLabels);
 
 const state = {

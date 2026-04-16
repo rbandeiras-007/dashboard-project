@@ -118,7 +118,7 @@ API_PORT = int(os.getenv("API_PORT", "5000"))
 def get_conn():
     conn = None
     try:
-        conn = psycopg.connect(**DB_CONFIG)
+        conn = psycopg.connect(**DB_CONFIG, sslmode="require")
         yield conn
     finally:
         if conn is not None:

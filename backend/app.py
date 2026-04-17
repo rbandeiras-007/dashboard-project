@@ -120,7 +120,7 @@ def get_conn():
     conn = None
     try:
         if DATABASE_URL:
-            conn = psycopg.connect(DATABASE_URL)
+            conn = psycopg.connect(DATABASE_URL, sslmode="require")
         else:
             conn = psycopg.connect(**DB_CONFIG, sslmode="require")
         yield conn

@@ -41,18 +41,37 @@
 
 <div class="container hidden" id="appContainer">
   <section class="header">
-    <h1>Projeto de Dashboards Interativos</h1>
-    <p>Visão executiva e técnica com indicadores operacionais, faturação, SLA, backlog e risco. Estrutura preparada para ligação segura a PostgreSQL através de API.</p>
-    
-    <div class="toolbar">
-      <div class="tabs">
-        <button class="tab-btn active" data-tab="executive" id="tabExecutive">Dashboard Executivo</button>
-        <button class="tab-btn" data-tab="technical" id="tabTechnical">Dashboard Técnico</button>
+    <div class="header-top">
+      <div class="brand-block">
+        <img src="assets/logo-demo.png" alt="Logo da empresa" class="brand-logo" />
+       <div class="brand-text">
+        <div class="brand-company" id="brandCompanyName">Empresa Cliente Demo</div>
+        <h1>Dashboard Operacional e Técnico</h1>
+        <p>
+          Visão executiva e técnica com indicadores operacionais, faturação, SLA, backlog e risco.
+          Estrutura preparada para ligação segura a PostgreSQL através de API.
+        </p>
       </div>
-
-      <button id="logoutBtn" class="secondary">Logout</button>
     </div>
-  </section>
+
+    <div class="user-panel">
+      <div class="user-avatar" id="userAvatar">U</div>
+
+      <div class="user-info">
+        <div class="user-name" id="loggedUserName">—</div>
+        <div class="user-role" id="loggedUserRole">—</div>
+      </div>
+    </div>
+
+  <div class="toolbar">
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="executive" id="tabExecutive">Dashboard Executivo</button>
+      <button class="tab-btn" data-tab="technical" id="tabTechnical">Dashboard Técnico</button>
+    </div>
+
+    <button id="logoutBtn" class="secondary">Logout</button>
+  </div>
+</section>
 
   <div class="export-actions">
    <button id="btnExportExcel" style="background:#1d4ed8; color:white; border:none; padding:10px 16px; border-radius:10px; cursor:pointer; font-weight:600;">

@@ -950,6 +950,26 @@ function showLoginScreen() {
   if (logoutBtn) logoutBtn.classList.add('hidden');
 }
 
+function formatRoleName(role) {
+  if (role === 'admin') return 'Administrador';
+  if (role === 'gestao') return 'Gestão';
+  if (role === 'tecnico') return 'Técnico';
+  return role || '—';
+}
+
+function renderLoggedUser(user) {
+  const userNameEl = document.getElementById('loggedUserName');
+  const userRoleEl = document.getElementById('loggedUserRole');
+
+  if (userNameEl) {
+    userNameEl.textContent = user.full_name || user.email || '—';
+  }
+
+  if (userRoleEl) {
+    userRoleEl.textContent = formatRoleName(user.role);
+  }
+}
+
 document.getElementById('loginBtn')?.addEventListener('click', async () => {
   const email = document.getElementById('loginEmail').value.trim();
   const password = document.getElementById('loginPassword').value;
@@ -963,6 +983,8 @@ document.getElementById('loginBtn')?.addEventListener('click', async () => {
     const result = await loginRequest(email, password);
 
     applyRolePermissions(result.user);
+    renderLoggedUser(result.user);
+
     await loadFilters();
 
     if (result.user.role === 'admin') {

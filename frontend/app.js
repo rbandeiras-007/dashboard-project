@@ -992,7 +992,7 @@ document.getElementById('logoutBtn')?.addEventListener('click', async () => {
 });
 
 document.getElementById('btnExportExcel')?.addEventListener('click', () => {
-  window.open('http://127.0.0.1:5000/api/export/executive-excel', '_blank');
+  window.open(`${API_BASE}/export/executive-excel`, '_blank');
 });
 
 document.getElementById('btnExportPdf')?.addEventListener('click', () => {

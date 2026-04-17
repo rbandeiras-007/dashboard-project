@@ -962,7 +962,12 @@ function renderLoggedUser(user) {
   const userRoleEl = document.getElementById('loggedUserRole');
 
   if (userNameEl) {
-    userNameEl.textContent = user.full_name || user.email || '—';
+    const displayName =
+     user.full_name && user.full_name.toLowerCase() !== 'administrador'
+       ? user.full_name
+       : user.email || 'Utilizador';
+
+    userNameEl.textContent = displayName;
   }
 
   if (userRoleEl) {

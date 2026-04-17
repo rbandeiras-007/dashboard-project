@@ -111,6 +111,7 @@ DB_CONFIG = {
     "port": int(os.getenv("DB_PORT", "5432")),
 }
 
+DATABASE_URL = os.getenv("DATABASE_URL")
 API_PORT = int(os.getenv("API_PORT", "5000"))
 
 
@@ -118,7 +119,10 @@ API_PORT = int(os.getenv("API_PORT", "5000"))
 def get_conn():
     conn = None
     try:
-        conn = psycopg.connect(**DB_CONFIG, sslmode="require")
+        if DATABASE_URL:
+            conn = psycopg.connect(DATABASE_URL)
+        else:
+            conn = psycopg.connect(**DB_CONFIG, sslmode="require")
         yield conn
     finally:
         if conn is not None:

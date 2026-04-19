@@ -67,8 +67,15 @@
 
   <div class="header-actions">
     <div class="tabs">
-      <button class="tab-btn active" data-tab="executive" id="tabExecutive">Dashboard Executivo</button>
-      <button class="tab-btn" data-tab="technical" id="tabTechnical">Dashboard Técnico</button>
+      <button class="tab-btn active" data-tab="executive" id="tabExecutive">
+        <span class="tab-icon">📊</span>
+        <span class="tab-label">Dashboard Executivo</span>
+      </button>
+
+      <button class="tab-btn" data-tab="technical" id="tabTechnical">
+        <span class="tab-icon">🛠</span>
+        <span class="tab-label">Dashboard Técnico</span>
+      </button>
     </div>
 
     <button id="logoutBtn" class="logout-btn">Terminar sessão</button>
@@ -156,7 +163,11 @@
       </section>
 
       <section class="table-card">
-        <h3>Tabela de Exceções</h3>
+        <div class="table-header">
+          <h3>Tabela de Exceções</h3>
+          <input type="text" id="exceptionsSearch" class="table-search" placeholder="Pesquisar na tabela..." />
+        </div>
+
         <table id="exceptionsTable">
           <thead>
             <tr><th>ID</th><th>Cliente</th><th>Estado</th><th>Valor</th><th>Data prevista</th><th>Dias atraso</th></tr>
@@ -239,7 +250,11 @@
       </section>
 
       <section class="table-card">
-        <h3>Projetos em Risco / Atrasados</h3>
+        <div class="table-header">
+          <h3>Projetos em Risco / Atrasados</h3>
+          <input type="text" id="riskProjectsSearch" class="table-search" placeholder="Pesquisar na tabela..." />
+        </div>
+
         <table id="riskProjectsTable">
           <thead>
             <tr><th>ID</th><th>Projeto</th><th>Cliente</th><th>Técnico</th><th>Estado</th><th>Risco</th><th>%</th><th>Dias atraso</th><th>Motivo</th></tr>

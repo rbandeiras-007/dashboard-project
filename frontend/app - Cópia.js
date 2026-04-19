@@ -10,6 +10,9 @@ const state = {
   manualTechnicalRefresh: false
 };
 
+let technicalLoaded = false;
+let executiveLoaded = false;
+
 const formatCurrency = (value) => new Intl.NumberFormat('pt-PT', {
   style: 'currency',
   currency: 'EUR',
@@ -49,21 +52,19 @@ function getStatusBadgeClass(status) {
 function getStatusColor(status) {
   const s = String(status || '').toLowerCase().trim();
 
-  // Executivo
-  if (s.includes('nova')) return '#3b82f6';         // azul
-  if (s.includes('prepara')) return '#f59e0b';      // laranja
-  if (s.includes('exped')) return '#ef4444';        // vermelho
-  if (s.includes('concluída') || s.includes('concluida')) return '#8b5cf6'; // roxo
-  if (s.includes('fatur')) return '#10b981';        // verde
+  if (s.includes('nova')) return '#3b82f6';
+  if (s.includes('prepara')) return '#f59e0b';
+  if (s.includes('exped')) return '#ef4444';
+  if (s.includes('concluída') || s.includes('concluida')) return '#8b5cf6';
+  if (s.includes('fatur')) return '#10b981';
 
-  // Técnico
-  if (s.includes('planeado')) return '#3b82f6';     // azul
-  if (s.includes('em curso')) return '#10b981';     // verde
-  if (s.includes('em risco')) return '#f59e0b';     // laranja
-  if (s.includes('atrasado')) return '#ef4444';     // vermelho
-  if (s.includes('concluído') || s.includes('concluido')) return '#8b5cf6'; // roxo
+  if (s.includes('planeado')) return '#3b82f6';
+  if (s.includes('em curso')) return '#10b981';
+  if (s.includes('em risco')) return '#f59e0b';
+  if (s.includes('atrasado')) return '#ef4444';
+  if (s.includes('concluído') || s.includes('concluido')) return '#8b5cf6';
 
-  return '#94a3b8'; // neutro
+  return '#94a3b8';
 }
 
 function showLoading() {
@@ -72,29 +73,6 @@ function showLoading() {
 
 function hideLoading() {
   document.getElementById('loadingOverlay')?.classList.add('hidden');
-}
-
-function playAlertBeep() {
-  try {
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
-
-    oscillator.type = 'sine';
-    oscillator.frequency.setValueAtTime(880, audioContext.currentTime);
-
-    gainNode.gain.setValueAtTime(0.0001, audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.12, audioContext.currentTime + 0.01);
-    gainNode.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + 0.35);
-
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
-
-    oscillator.start();
-    oscillator.stop(audioContext.currentTime + 0.35);
-  } catch (error) {
-    console.error('Erro ao reproduzir som de alerta:', error);
-  }
 }
 
 function playAlertBeep() {
@@ -134,7 +112,9 @@ function getFilters() {
 function toQuery(params) {
   const search = new URLSearchParams();
   Object.entries(params).forEach(([key, value]) => {
-    if (value !== '' && value !== null && value !== undefined) search.append(key, value);
+    if (value !== '' && value !== null && value !== undefined) {
+      search.append(key, value);
+    }
   });
   return search.toString() ? `?${search.toString()}` : '';
 }
@@ -150,6 +130,7 @@ async function fetchJson(path, params = {}) {
 function fillSelect(selectId, items, valueKey, labelKey) {
   const select = document.getElementById(selectId);
   select.innerHTML = '<option value="">Todos</option>';
+
   items.forEach(item => {
     const opt = document.createElement('option');
     opt.value = item[valueKey];
@@ -160,6 +141,7 @@ function fillSelect(selectId, items, valueKey, labelKey) {
 
 async function loadFilters() {
   const data = await fetchJson('/filters');
+
   fillSelect('clientFilter', data.clients, 'client_id', 'client_name');
   fillSelect('technicianFilter', data.technicians, 'technician_id', 'technician_name');
 
@@ -226,11 +208,7 @@ function createBarChart(id, labels, data, horizontal = false, format = 'number',
           ticks: {
             callback: valueTickFormatter,
             color: '#5b708b',
-            font: {
-              family: 'Inter',
-              size: 11,
-              weight: '600'
-            }
+            font: { family: 'Inter', size: 11, weight: '600' }
           },
           grid: { color: '#eaf0f7' }
         },
@@ -238,11 +216,7 @@ function createBarChart(id, labels, data, horizontal = false, format = 'number',
           grid: { display: false },
           ticks: {
             color: '#5b708b',
-            font: {
-              family: 'Inter',
-              size: 11,
-              weight: '600'
-            }
+            font: { family: 'Inter', size: 11, weight: '600' }
           }
         }
       }
@@ -251,25 +225,17 @@ function createBarChart(id, labels, data, horizontal = false, format = 'number',
           grid: { display: false },
           ticks: {
             color: '#5b708b',
-            font: {
-              family: 'Inter',
-              size: 11,
-              weight: '600'
-            }
+            font: { family: 'Inter', size: 11, weight: '600' }
           }
         },
         y: {
           ticks: {
             callback: valueTickFormatter,
             color: '#5b708b',
-            font: {
-              family: 'Inter',
-              size: 11,
-              weight: '600'
-            }
+            font: { family: 'Inter', size: 11, weight: '600' }
           },
           grid: { color: '#eaf0f7' }
-        },
+        }
       };
 
   state.charts[id] = new Chart(ctx, {
@@ -300,11 +266,7 @@ function createBarChart(id, labels, data, horizontal = false, format = 'number',
           clamp: true,
           clip: false,
           formatter: (v) => format === 'currency' ? formatCompactCurrency(v) : v,
-          font: {
-            family: 'Inter',
-            size: 11,
-            weight: '700'
-          }
+          font: { family: 'Inter', size: 11, weight: '700' }
         },
         tooltip: {
           callbacks: {
@@ -321,7 +283,6 @@ function createLineChart(id, labels, data) {
   destroyChart(id);
 
   const ctx = document.getElementById(id);
-
   const maxPoints = 30;
   const step = Math.ceil(labels.length / maxPoints) || 1;
 
@@ -363,16 +324,10 @@ function createLineChart(id, labels, data) {
           align: 'start',
           labels: {
             color: '#17324f',
-            font: {
-              family: 'Inter',
-              size: 12,
-              weight: '600'
-            }
+            font: { family: 'Inter', size: 12, weight: '600' }
           }
         },
-        datalabels: {
-          display: false
-        },
+        datalabels: { display: false },
         tooltip: {
           callbacks: {
             label: (ctx) => formatCurrency(ctx.raw)
@@ -384,11 +339,7 @@ function createLineChart(id, labels, data) {
           ticks: {
             callback: (value) => formatCompactCurrency(value),
             color: '#5b708b',
-            font: {
-              family: 'Inter',
-              size: 11,
-              weight: '600'
-            }
+            font: { family: 'Inter', size: 11, weight: '600' }
           },
           grid: { color: '#eaf0f7' }
         },
@@ -400,11 +351,7 @@ function createLineChart(id, labels, data) {
             maxRotation: 0,
             minRotation: 0,
             color: '#5b708b',
-            font: {
-              family: 'Inter',
-              size: 11,
-              weight: '600'
-            }
+            font: { family: 'Inter', size: 11, weight: '600' }
           }
         }
       }
@@ -461,6 +408,7 @@ function createDoughnutChart(id, labels, data, colors = 'categorical') {
 function fillExceptionsTable(rows) {
   const tbody = document.querySelector('#exceptionsTable tbody');
   tbody.innerHTML = '';
+
   rows.forEach(r => {
     const tr = document.createElement('tr');
     tr.innerHTML = `
@@ -486,7 +434,6 @@ function fillRiskProjectsTable(rows) {
         : (r.risk_level === 'Alto' ? 'warning' : 'info');
 
     let alertClass = '';
-
     if (r.risk_level === 'Crítico') {
       alertClass = 'alert-critical';
     } else if (r.risk_level === 'Alto') {
@@ -513,300 +460,261 @@ function fillRiskProjectsTable(rows) {
 }
 
 async function loadExecutive() {
-  showLoading();
-  try {
-    const auth = await fetchMe();
-    if (!auth.authenticated || !['admin', 'gestao'].includes(auth.user.role)) {
-      throw new Error('Sem permissão para o dashboard executivo.');
-    }
-
-    const f = getFilters();
-
-    const summary = await fetchJson('/orders/summary', f);
-
-    const totalValue = Number(summary.total_value ?? summary.total_order_value ?? 0);
-    const totalOrders = Number(summary.total_orders ?? 0);
-    const totalClients = Number(summary.total_clients ?? 0);
-    const lateOrders = Number(summary.delayed_orders ?? summary.late_orders ?? 0);
-
-    const billingRate = summary.billing_rate != null
-      ? Number(summary.billing_rate)
-      : (totalOrders > 0 ? ((totalOrders - lateOrders) / totalOrders) * 100 : 0);
-
-    document.getElementById('kpiRevenue').textContent = formatCurrency(totalValue);
-    document.getElementById('kpiOrders').textContent = totalOrders.toLocaleString('pt-PT');
-    document.getElementById('kpiBillingRate').textContent = `${billingRate.toFixed(1)}%`;
-    document.getElementById('kpiLateOrders').textContent = lateOrders.toLocaleString('pt-PT');
-    document.getElementById('kpiClients').textContent = totalClients.toLocaleString('pt-PT');
-
-    const [trend, byStatus, topClients, funnel, exceptions] = await Promise.all([
-      fetchJson('/executive/revenue-trend', f),
-      fetchJson('/executive/orders-by-status', f),
-      fetchJson('/executive/top-clients', f),
-      fetchJson('/executive/funnel', f),
-      fetchJson('/executive/exceptions', f),
-    ]);
-
-    createLineChart('revenueTrendChart', trend.map(x => x.day), trend.map(x => Number(x.value)));
-
-    createBarChart(
-      'revenueByStatusChart',
-      byStatus.map(x => x.status),
-      byStatus.map(x => Number(x.value)),
-      true,
-      'currency',
-      'status'
-    );
-
-    createBarChart(
-      'topClientsChart',
-      topClients.map(x => x.client_name),
-      topClients.map(x => Number(x.value)),
-      true,
-      'currency',
-      'categorical'
-    );
-
-    createDoughnutChart(
-      'funnelChart',
-      funnel.map(x => x.status),
-      funnel.map(x => Number(x.qty)),
-      'status'
-    );
-
-    fillExceptionsTable(exceptions);
-
-  } finally {
-    hideLoading();
+  const auth = await fetchMe();
+  if (!auth.authenticated || !['admin', 'gestao'].includes(auth.user.role)) {
+    throw new Error('Sem permissão para o dashboard executivo.');
   }
+
+  const f = getFilters();
+  const summary = await fetchJson('/orders/summary', f);
+
+  const totalValue = Number(summary.total_value ?? summary.total_order_value ?? 0);
+  const totalOrders = Number(summary.total_orders ?? 0);
+  const totalClients = Number(summary.total_clients ?? 0);
+  const lateOrders = Number(summary.delayed_orders ?? summary.late_orders ?? 0);
+
+  const billingRate = summary.billing_rate != null
+    ? Number(summary.billing_rate)
+    : (totalOrders > 0 ? ((totalOrders - lateOrders) / totalOrders) * 100 : 0);
+
+  document.getElementById('kpiRevenue').textContent = formatCurrency(totalValue);
+  document.getElementById('kpiOrders').textContent = totalOrders.toLocaleString('pt-PT');
+  document.getElementById('kpiBillingRate').textContent = `${billingRate.toFixed(1)}%`;
+  document.getElementById('kpiLateOrders').textContent = lateOrders.toLocaleString('pt-PT');
+  document.getElementById('kpiClients').textContent = totalClients.toLocaleString('pt-PT');
+
+  const [trend, byStatus, topClients, funnel, exceptions] = await Promise.all([
+    fetchJson('/executive/revenue-trend', f),
+    fetchJson('/executive/orders-by-status', f),
+    fetchJson('/executive/top-clients', f),
+    fetchJson('/executive/funnel', f),
+    fetchJson('/executive/exceptions', f),
+  ]);
+
+  createLineChart('revenueTrendChart', trend.map(x => x.day), trend.map(x => Number(x.value)));
+
+  createBarChart(
+    'revenueByStatusChart',
+    byStatus.map(x => x.status),
+    byStatus.map(x => Number(x.value)),
+    true,
+    'currency',
+    'status'
+  );
+
+  createBarChart(
+    'topClientsChart',
+    topClients.map(x => x.client_name),
+    topClients.map(x => Number(x.value)),
+    true,
+    'currency',
+    'categorical'
+  );
+
+  createDoughnutChart(
+    'funnelChart',
+    funnel.map(x => x.status),
+    funnel.map(x => Number(x.qty)),
+    'status'
+  );
+
+  fillExceptionsTable(exceptions);
 }
 
 async function loadTechnical() {
-  showLoading();
-  try {
-    const auth = await fetchMe();
-    if (!auth.authenticated || !['admin', 'tecnico'].includes(auth.user.role)) {
-      throw new Error('Sem permissão para o dashboard técnico.');
-    }
+  const auth = await fetchMe();
+  if (!auth.authenticated || !['admin', 'tecnico'].includes(auth.user.role)) {
+    throw new Error('Sem permissão para o dashboard técnico.');
+  }
 
-    const f = getFilters();
+  const f = getFilters();
 
-    const [summary, byStatus, plannedActual, workload, reasons, riskProjects] = await Promise.all([
-      fetchJson('/technical/summary', f),
-      fetchJson('/technical/projects-by-status', f),
-      fetchJson('/technical/planned-vs-actual', f),
-      fetchJson('/technical/workload-by-technician', f),
-      fetchJson('/technical/delay-reasons', f),
-      fetchJson('/technical/at-risk-projects', f),
-    ]);
+  const [summary, byStatus, plannedActual, workload, reasons, riskProjects] = await Promise.all([
+    fetchJson('/technical/summary', f),
+    fetchJson('/technical/projects-by-status', f),
+    fetchJson('/technical/planned-vs-actual', f),
+    fetchJson('/technical/workload-by-technician', f),
+    fetchJson('/technical/delay-reasons', f),
+    fetchJson('/technical/at-risk-projects', f),
+  ]);
 
-    document.getElementById('kpiActiveProjects').textContent = summary.active_projects;
-    document.getElementById('kpiAtRiskProjects').textContent = summary.at_risk_projects;
-    document.getElementById('kpiSlaRate').textContent = formatPercent(summary.sla_rate);
-    document.getElementById('kpiBacklog').textContent = `${Number(summary.total_backlog_hours || 0).toFixed(0)} h`;
+  document.getElementById('kpiActiveProjects').textContent = summary.active_projects;
+  document.getElementById('kpiAtRiskProjects').textContent = summary.at_risk_projects;
+  document.getElementById('kpiSlaRate').textContent = formatPercent(summary.sla_rate);
+  document.getElementById('kpiBacklog').textContent = `${Number(summary.total_backlog_hours || 0).toFixed(0)} h`;
 
-    createBarChart(
-      'projectsByStatusChart',
-      byStatus.map(x => x.status),
-      byStatus.map(x => Number(x.qty)),
-      false,
-      'number',
-      'status'
-    );
+  createBarChart(
+    'projectsByStatusChart',
+    byStatus.map(x => x.status),
+    byStatus.map(x => Number(x.qty)),
+    false,
+    'number',
+    'status'
+  );
 
-    destroyChart('plannedVsActualChart');
-const ctx = document.getElementById('plannedVsActualChart');
+  destroyChart('plannedVsActualChart');
+  const ctx = document.getElementById('plannedVsActualChart');
+  document.getElementById('plannedVsActualChart').parentElement.style.height = '460px';
 
-// mais espaço visual
-document.getElementById('plannedVsActualChart').parentElement.style.height = '460px';
+  const plannedActualTop = [...plannedActual].slice(0, 7);
 
-// limitar para melhor leitura
-const plannedActualTop = [...plannedActual].slice(0, 7);
+  const plannedActualLabels = plannedActualTop.map((x) => {
+    const rawName = String(x.project_name || '').trim();
+    const cleanName = rawName.replace(/\s*#\d+\s*$/g, '').trim();
+    return cleanName.length > 26 ? cleanName.slice(0, 26) + '…' : cleanName;
+  });
 
-const plannedActualLabels = plannedActualTop.map((x) => {
-  const rawName = String(x.project_name || '').trim();
-  const cleanName = rawName.replace(/\s*#\d+\s*$/g, '').trim();
-  return cleanName.length > 26 ? cleanName.slice(0, 26) + '…' : cleanName;
-});
+  const plannedActualFullLabels = plannedActualTop.map((x) =>
+    String(x.project_name || '').trim()
+  );
 
-const plannedActualFullLabels = plannedActualTop.map((x) =>
-  String(x.project_name || '').trim()
-);
-
-state.charts['plannedVsActualChart'] = new Chart(ctx, {
-  type: 'bar',
-  data: {
-    labels: plannedActualLabels,
-    datasets: [
-      {
-        label: 'Planeado',
-        data: plannedActualTop.map(x => Number(x.planned_hours)),
-        backgroundColor: 'rgba(59,130,246,.88)',
-        borderRadius: 8,
-        maxBarThickness: 18,
-        categoryPercentage: 0.72,
-        barPercentage: 0.9
-      },
-      {
-        label: 'Real',
-        data: plannedActualTop.map(x => Number(x.actual_hours)),
-        backgroundColor: 'rgba(239,68,68,.82)',
-        borderRadius: 8,
-        maxBarThickness: 18,
-        categoryPercentage: 0.72,
-        barPercentage: 0.9
-      }
-    ]
-  },
-  options: {
-    indexAxis: 'y',
-    responsive: true,
-    maintainAspectRatio: false,
-    layout: {
-      padding: { left: 8, right: 20, top: 8, bottom: 0 }
-    },
-    plugins: {
-      legend: {
-        position: 'top',
-        align: 'start',
-        labels: {
-          boxWidth: 14,
-          boxHeight: 14,
-          color: '#17324f',
-          font: {
-            family: 'Inter',
-            size: 12,
-            weight: '700'
-          }
+  state.charts['plannedVsActualChart'] = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: plannedActualLabels,
+      datasets: [
+        {
+          label: 'Planeado',
+          data: plannedActualTop.map(x => Number(x.planned_hours)),
+          backgroundColor: 'rgba(59,130,246,.88)',
+          borderRadius: 8,
+          maxBarThickness: 18,
+          categoryPercentage: 0.72,
+          barPercentage: 0.9
+        },
+        {
+          label: 'Real',
+          data: plannedActualTop.map(x => Number(x.actual_hours)),
+          backgroundColor: 'rgba(239,68,68,.82)',
+          borderRadius: 8,
+          maxBarThickness: 18,
+          categoryPercentage: 0.72,
+          barPercentage: 0.9
         }
-      },
-      datalabels: {
-        display: false
-      },
-      tooltip: {
-        callbacks: {
-          title: (items) => plannedActualFullLabels[items[0].dataIndex],
-          label: (ctx) => `${ctx.dataset.label}: ${Number(ctx.raw).toFixed(0)} h`
-        }
-      }
+      ]
     },
-    scales: {
-      x: {
-        beginAtZero: true,
-        suggestedMax: Math.max(
-          ...plannedActualTop.map(x => Number(x.planned_hours)),
-          ...plannedActualTop.map(x => Number(x.actual_hours))
-        ) + 20,
-        ticks: {
-          color: '#52667f',
-          callback: (value) => `${value} h`,
-          font: {
-            family: 'Inter',
-            size: 11,
-            weight: '700'
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      layout: {
+        padding: { left: 8, right: 20, top: 8, bottom: 0 }
+      },
+      plugins: {
+        legend: {
+          position: 'top',
+          align: 'start',
+          labels: {
+            boxWidth: 14,
+            boxHeight: 14,
+            color: '#17324f',
+            font: { family: 'Inter', size: 12, weight: '700' }
           }
         },
-        grid: { color: '#eaf0f7' }
+        datalabels: { display: false },
+        tooltip: {
+          callbacks: {
+            title: (items) => plannedActualFullLabels[items[0].dataIndex],
+            label: (ctx) => `${ctx.dataset.label}: ${Number(ctx.raw).toFixed(0)} h`
+          }
+        }
       },
-      y: {
-        grid: { display: false },
-        ticks: {
-          color: '#17324f',
-          font: {
-            family: 'Inter',
-            size: 12,
-            weight: '700'
+      scales: {
+        x: {
+          beginAtZero: true,
+          suggestedMax: Math.max(
+            ...plannedActualTop.map(x => Number(x.planned_hours)),
+            ...plannedActualTop.map(x => Number(x.actual_hours))
+          ) + 20,
+          ticks: {
+            color: '#52667f',
+            callback: (value) => `${value} h`,
+            font: { family: 'Inter', size: 11, weight: '700' }
+          },
+          grid: { color: '#eaf0f7' }
+        },
+        y: {
+          grid: { display: false },
+          ticks: {
+            color: '#17324f',
+            font: { family: 'Inter', size: 12, weight: '700' }
           }
         }
       }
     }
+  });
+
+  createBarChart(
+    'workloadChart',
+    workload.map(x => x.technician_name),
+    workload.map(x => Number(x.backlog_hours)),
+    true,
+    'number',
+    'danger'
+  );
+
+  createDoughnutChart(
+    'delayReasonsChart',
+    reasons.map(x => x.delay_reason),
+    reasons.map(x => Number(x.qty)),
+    'categorical'
+  );
+
+  fillRiskProjectsTable(riskProjects);
+
+  const criticalCount = riskProjects.filter(p => p.risk_level === 'Crítico').length;
+  const highCount = riskProjects.filter(p => p.risk_level === 'Alto').length;
+
+  if (
+    state.alertSoundEnabled &&
+    criticalCount > 0 &&
+    (
+      criticalCount !== state.lastCriticalCount ||
+      state.manualTechnicalRefresh
+    )
+  ) {
+    playAlertBeep();
   }
-});
 
-    createBarChart(
-      'workloadChart',
-      workload.map(x => x.technician_name),
-      workload.map(x => Number(x.backlog_hours)),
-      true,
-      'number',
-      'danger'
-    );
+  state.lastCriticalCount = criticalCount;
+  state.manualTechnicalRefresh = false;
 
-    createDoughnutChart(
-      'delayReasonsChart',
-      reasons.map(x => x.delay_reason),
-      reasons.map(x => Number(x.qty)),
-      'categorical'
-    );
+  document.getElementById('kpiCriticalAlerts').textContent = criticalCount;
+  document.getElementById('kpiHighAlerts').textContent = highCount;
 
-    fillRiskProjectsTable(riskProjects);
-const criticalCount = riskProjects.filter(p => p.risk_level === 'Crítico').length;
-const highCount = riskProjects.filter(p => p.risk_level === 'Alto').length;
+  const banner = document.getElementById('technicalAlertsBanner');
+  const bannerText = document.getElementById('technicalAlertsBannerText');
 
-if (
-  state.alertSoundEnabled &&
-  criticalCount > 0 &&
-  (
-    criticalCount !== state.lastCriticalCount ||
-    state.manualTechnicalRefresh
-  )
-) {
-  playAlertBeep();
-}
+  if (banner && bannerText) {
+    banner.classList.remove('hidden', 'critical', 'high', 'ok');
 
-state.lastCriticalCount = criticalCount;
-state.manualTechnicalRefresh = false;
-
-if (
-  state.alertSoundEnabled &&
-  criticalCount > 0 &&
-  criticalCount !== state.lastCriticalCount
-) {
-  playAlertBeep();
-}
-
-state.lastCriticalCount = criticalCount;
-
-document.getElementById('kpiCriticalAlerts').textContent = criticalCount;
-document.getElementById('kpiHighAlerts').textContent = highCount;
-
-const banner = document.getElementById('technicalAlertsBanner');
-const bannerText = document.getElementById('technicalAlertsBannerText');
-
-if (banner && bannerText) {
-  banner.classList.remove('hidden', 'critical', 'high', 'ok');
-
-  if (criticalCount > 0) {
-    banner.classList.add('critical');
-    bannerText.textContent = `Atenção: existem ${criticalCount} alertas críticos e ${highCount} alertas altos a requerer atenção imediata.`;
-  } else if (highCount > 0) {
-    banner.classList.add('high');
-    bannerText.textContent = `Existem ${highCount} alertas altos a requerer acompanhamento prioritário.`;
-  } else {
-    banner.classList.add('hidden');
-    bannerText.textContent = '';
+    if (criticalCount > 0) {
+      banner.classList.add('critical');
+      bannerText.textContent = `Atenção: existem ${criticalCount} alertas críticos e ${highCount} alertas altos a requerer atenção imediata.`;
+    } else if (highCount > 0) {
+      banner.classList.add('high');
+      bannerText.textContent = `Existem ${highCount} alertas altos a requerer acompanhamento prioritário.`;
+    } else {
+      banner.classList.add('hidden');
+      bannerText.textContent = '';
+    }
   }
-}
 
-const criticalCard = document.getElementById('criticalAlertsCard');
-const highCard = document.getElementById('highAlertsCard');
+  const criticalCard = document.getElementById('criticalAlertsCard');
+  const highCard = document.getElementById('highAlertsCard');
 
-if (criticalCard) {
-  criticalCard.style.border = criticalCount > 0 ? '2px solid #ef4444' : '1px solid var(--border)';
-  criticalCard.style.boxShadow = criticalCount > 0
-    ? '0 0 0 3px rgba(239,68,68,.12)'
-    : 'var(--shadow)';
-}
+  if (criticalCard) {
+    criticalCard.style.border = criticalCount > 0 ? '2px solid #ef4444' : '1px solid var(--border)';
+    criticalCard.style.boxShadow = criticalCount > 0
+      ? '0 0 0 3px rgba(239,68,68,.12)'
+      : 'var(--shadow)';
+  }
 
-if (highCard) {
-  highCard.style.border = highCount > 0 ? '2px solid #f59e0b' : '1px solid var(--border)';
-  highCard.style.boxShadow = highCount > 0
-    ? '0 0 0 3px rgba(245,158,11,.12)'
-    : 'var(--shadow)';
-}
-
-  } finally {
-    hideLoading();
+  if (highCard) {
+    highCard.style.border = highCount > 0 ? '2px solid #f59e0b' : '1px solid var(--border)';
+    highCard.style.boxShadow = highCount > 0
+      ? '0 0 0 3px rgba(245,158,11,.12)'
+      : 'var(--shadow)';
   }
 }
 
@@ -828,9 +736,6 @@ function setTab(tab) {
     btn.classList.toggle('active', btn.dataset.tab === tab);
   });
 }
-
-let technicalLoaded = false;
-let executiveLoaded = false;
 
 document.querySelectorAll('.tab-btn').forEach(btn => {
   btn.addEventListener('click', async () => {
@@ -863,34 +768,55 @@ document.getElementById('applyFilters').addEventListener('click', async () => {
   const auth = await fetchMe();
   if (!auth.authenticated) return;
 
-  if (auth.user.role === 'admin') {
-    state.manualTechnicalRefresh = true;
-    await loadExecutive();
-    await loadTechnical();
-  } else if (auth.user.role === 'gestao') {
-    await loadExecutive();
-  } else if (auth.user.role === 'tecnico') {
-    state.manualTechnicalRefresh = true;
-    await loadTechnical();
+  showLoading();
+  try {
+    if (auth.user.role === 'admin') {
+      state.manualTechnicalRefresh = true;
+      await loadExecutive();
+      await loadTechnical();
+      executiveLoaded = true;
+      technicalLoaded = true;
+    } else if (auth.user.role === 'gestao') {
+      await loadExecutive();
+      executiveLoaded = true;
+    } else if (auth.user.role === 'tecnico') {
+      state.manualTechnicalRefresh = true;
+      await loadTechnical();
+      technicalLoaded = true;
+    }
+  } finally {
+    hideLoading();
   }
 });
 
 document.getElementById('resetFilters').addEventListener('click', async () => {
   ['clientFilter', 'orderStatusFilter', 'projectStatusFilter', 'technicianFilter', 'dateFrom', 'dateTo']
-    .forEach(id => document.getElementById(id).value = '');
+    .forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
+    });
 
   const auth = await fetchMe();
   if (!auth.authenticated) return;
 
-  if (auth.user.role === 'admin') {
-    state.manualTechnicalRefresh = true;
-    await loadExecutive();
-    await loadTechnical();
-  } else if (auth.user.role === 'gestao') {
-    await loadExecutive();
-  } else if (auth.user.role === 'tecnico') {
-    state.manualTechnicalRefresh = true;
-    await loadTechnical();
+  showLoading();
+  try {
+    if (auth.user.role === 'admin') {
+      state.manualTechnicalRefresh = true;
+      await loadExecutive();
+      await loadTechnical();
+      executiveLoaded = true;
+      technicalLoaded = true;
+    } else if (auth.user.role === 'gestao') {
+      await loadExecutive();
+      executiveLoaded = true;
+    } else if (auth.user.role === 'tecnico') {
+      state.manualTechnicalRefresh = true;
+      await loadTechnical();
+      technicalLoaded = true;
+    }
+  } finally {
+    hideLoading();
   }
 });
 
@@ -970,6 +896,9 @@ function showLoginScreen() {
   if (loginScreen) loginScreen.classList.remove('hidden');
   if (appContainer) appContainer.classList.add('hidden');
   if (logoutBtn) logoutBtn.classList.add('hidden');
+
+  executiveLoaded = false;
+  technicalLoaded = false;
 }
 
 function formatRoleName(role) {
@@ -985,9 +914,9 @@ function renderLoggedUser(user) {
 
   if (userNameEl) {
     const displayName =
-     user.full_name && user.full_name.toLowerCase() !== 'administrador'
-       ? user.full_name
-       : user.email || 'Utilizador';
+      user.full_name && user.full_name.toLowerCase() !== 'administrador'
+        ? user.full_name
+        : user.email || 'Utilizador';
 
     userNameEl.textContent = displayName;
   }
@@ -1011,15 +940,20 @@ document.getElementById('loginBtn')?.addEventListener('click', async () => {
 
     applyRolePermissions(result.user);
     renderLoggedUser(result.user);
-
     await loadFilters();
 
     if (result.user.role === 'admin') {
       await loadExecutive();
+      executiveLoaded = true;
+      technicalLoaded = false;
     } else if (result.user.role === 'gestao') {
       await loadExecutive();
+      executiveLoaded = true;
+      technicalLoaded = false;
     } else if (result.user.role === 'tecnico') {
       await loadTechnical();
+      technicalLoaded = true;
+      executiveLoaded = false;
     }
   } catch (err) {
     errorBox.textContent = err.message;
@@ -1033,14 +967,19 @@ document.getElementById('logoutBtn')?.addEventListener('click', async () => {
   try {
     showLoading();
     await logoutRequest();
-    window.location.reload();
+
+    showLoginScreen();
+
+    document.getElementById('loginEmail').value = '';
+    document.getElementById('loginPassword').value = '';
   } finally {
     hideLoading();
   }
 });
 
 document.getElementById('btnExportExcel')?.addEventListener('click', () => {
-  window.open(`${API_BASE}/export/executive-excel`, '_blank');
+  const query = toQuery(getFilters());
+  window.open(`${API_BASE}/export/executive-excel${query}`, '_blank');
 });
 
 document.getElementById('btnExportPdf')?.addEventListener('click', () => {
@@ -1055,11 +994,7 @@ document.getElementById('toggleAlertSound')?.addEventListener('click', () => {
 
   if (state.alertSoundEnabled) {
     btn.textContent = '🔕 Desativar som de alerta';
-
-    // beep de teste ao ativar
     playAlertBeep();
-
-    // força novo beep se existirem críticos na próxima atualização
     state.lastCriticalCount = -1;
   } else {
     btn.textContent = '🔔 Ativar som de alerta';
@@ -1074,15 +1009,21 @@ async function init() {
 
     if (auth.authenticated) {
       applyRolePermissions(auth.user);
+      renderLoggedUser(auth.user);
       await loadFilters();
 
       if (auth.user.role === 'admin') {
         await loadExecutive();
-        await loadTechnical();
+        executiveLoaded = true;
+        technicalLoaded = false;
       } else if (auth.user.role === 'gestao') {
         await loadExecutive();
+        executiveLoaded = true;
+        technicalLoaded = false;
       } else if (auth.user.role === 'tecnico') {
         await loadTechnical();
+        technicalLoaded = true;
+        executiveLoaded = false;
       }
     } else {
       showLoginScreen();

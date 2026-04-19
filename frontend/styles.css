@@ -24,11 +24,11 @@ body {
 }
 .container { max-width: 1400px; margin: 0 auto; padding: 24px; }
 .header {
-  background: linear-gradient(135deg, #102a43 0%, #1f4f82 55%, #2563eb 100%);
-  color: white;
-  border-radius: 26px;
-  padding: 28px 32px;
-  box-shadow: var(--shadow);
+  background: linear-gradient(135deg, #17385f 0%, #2f66d0 100%);
+  color: #fff;
+  border-radius: 28px;
+  padding: 28px 28px 22px;
+  box-shadow: 0 18px 40px rgba(18, 35, 63, .16);
 }
 .header h1 { margin: 0; font-size: 32px; }
 .header p { margin: 10px 0 0; color: rgba(255,255,255,.85); max-width: 860px; line-height: 1.5; }
@@ -60,14 +60,51 @@ button {
 button.secondary { background: white; color: var(--text); border: 1px solid var(--border); }
 
 .tabs {
-  display: inline-flex; background: white; border-radius: 14px; padding: 6px; margin: 18px 0;
-  box-shadow: var(--shadow); border: 1px solid var(--border);
+  display: inline-flex;
+  gap: 8px;
+  background: rgba(255,255,255,.12);
+  padding: 6px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,.16);
 }
+
 .tab-btn {
-  border: none; background: transparent; color: var(--muted); width: auto; padding: 10px 18px;
-  border-radius: 10px; font-weight: 700;
+  border: 0;
+  background: transparent;
+  color: rgba(255,255,255,.82);
+  padding: 12px 18px;
+  border-radius: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .2s ease;
 }
-.tab-btn.active { background: var(--primary); color: white; }
+
+.tab-btn:hover {
+  background: rgba(255,255,255,.08);
+  color: #fff;
+}
+
+.tab-btn.active {
+  background: #ffffff;
+  color: #1f4fbf;
+  box-shadow: 0 8px 18px rgba(0,0,0,.12);
+}
+
+.logout-btn {
+  border: 1px solid rgba(255,255,255,.22);
+  background: rgba(255,255,255,.12);
+  color: #fff;
+  padding: 12px 18px;
+  border-radius: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  min-width: 120px;
+  transition: all .2s ease;
+}
+
+.logout-btn:hover {
+  background: rgba(255,255,255,.2);
+}
 
 .kpi-grid {
   display: grid; grid-template-columns: repeat(5, minmax(160px, 1fr)); gap: 14px; margin-bottom: 14px;
@@ -763,19 +800,43 @@ tr.alert-high:hover {
   min-width: 220px;
 }
 
+.header {
+  background: linear-gradient(135deg, #17385f 0%, #2f66d0 100%);
+  color: #fff;
+  border-radius: 28px;
+  padding: 28px 28px 22px;
+  box-shadow: 0 18px 40px rgba(18, 35, 63, .16);
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 34px;
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+.header p {
+  margin: 10px 0 0;
+  color: rgba(255,255,255,.88);
+  max-width: 860px;
+  line-height: 1.55;
+  font-size: 15px;
+}
+
 .header-top {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   gap: 28px;
   flex-wrap: wrap;
+  margin-bottom: 22px;
 }
 
 .brand-block {
   display: flex;
   align-items: center;
   gap: 20px;
-  flex: 1 1 520px;
+  flex: 1 1 620px;
   min-width: 320px;
 }
 
@@ -783,9 +844,9 @@ tr.alert-high:hover {
   width: 96px;
   height: 96px;
   object-fit: contain;
-  background: rgba(255,255,255,.14);
+  background: rgba(255,255,255,.12);
   padding: 12px;
-  border-radius: 18px;
+  border-radius: 20px;
   flex-shrink: 0;
 }
 
@@ -793,47 +854,17 @@ tr.alert-high:hover {
   flex: 1;
 }
 
+.brand-text h1 {
+  margin: 0 0 10px;
+}
+
 .brand-company {
   font-size: 13px;
-  font-weight: 700;
-  letter-spacing: .08em;
+  font-weight: 800;
+  letter-spacing: .14em;
   text-transform: uppercase;
-  color: rgba(255,255,255,.78);
-  margin-bottom: 6px;
-}
-
-.user-panel {
-  min-width: 240px;
-  background: rgba(255,255,255,.12);
-  border: 1px solid rgba(255,255,255,.18);
-  border-radius: 16px;
-  padding: 14px 16px;
-  color: #fff;
-}
-
-.user-line {
-  font-size: 14px;
-  margin-bottom: 6px;
-}
-
-.user-line:last-child {
-  margin-bottom: 0;
-}
-
-@media (max-width: 768px) {
-  .brand-block {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .brand-logo {
-    width: 68px;
-    height: 68px;
-  }
-
-  .user-panel {
-    width: 100%;
-  }
+  color: rgba(255,255,255,.8);
+  margin-bottom: 8px;
 }
 
 .user-panel {
@@ -842,22 +873,22 @@ tr.alert-high:hover {
   gap: 14px;
   background: rgba(255,255,255,.12);
   border: 1px solid rgba(255,255,255,.18);
-  border-radius: 16px;
+  border-radius: 18px;
   padding: 14px 18px;
   color: #fff;
-  min-width: 240px;
+  min-width: 270px;
+  backdrop-filter: blur(8px);
 }
 
 .user-avatar {
-  width: 46px;
-  height: 46px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #4f86ff, #6d5dfc);
+  background: linear-gradient(135deg, #5d7cff, #7b61ff);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 700;
-  font-size: 15px;
+  font-weight: 800;
   color: #fff;
   flex-shrink: 0;
 }
@@ -873,8 +904,108 @@ tr.alert-high:hover {
   line-height: 1.2;
 }
 
-.user-name {
-  font-size: 15px;
-  font-weight: 700;
+.user-role {
+  font-size: 13px;
+  color: rgba(255,255,255,.8);
   line-height: 1.2;
+}
+
+.header-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.tabs {
+  display: inline-flex;
+  gap: 8px;
+  background: rgba(255,255,255,.12);
+  padding: 6px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,.16);
+}
+
+.tab-btn {
+  border: 0;
+  background: transparent;
+  color: rgba(255,255,255,.82);
+  padding: 12px 18px;
+  border-radius: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .2s ease;
+}
+
+.tab-btn:hover {
+  background: rgba(255,255,255,.08);
+  color: #fff;
+}
+
+.tab-btn.active {
+  background: #ffffff;
+  color: #1f4fbf;
+  box-shadow: 0 8px 18px rgba(0,0,0,.12);
+}
+
+.logout-btn {
+  width: auto;
+  min-width: 160px;
+  border: 1px solid rgba(255,255,255,.22);
+  background: rgba(255,255,255,.12);
+  color: #fff;
+  padding: 12px 18px;
+  border-radius: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .2s ease;
+}
+
+.logout-btn:hover {
+  background: rgba(255,255,255,.2);
+}
+
+@media (max-width: 768px) {
+  .header {
+    padding: 22px 18px 18px;
+  }
+
+  .brand-block {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .brand-logo {
+    width: 76px;
+    height: 76px;
+  }
+
+  .brand-text h1 {
+    font-size: 24px;
+  }
+
+  .user-panel {
+    width: 100%;
+    min-width: auto;
+  }
+
+  .header-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .tabs {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .tab-btn {
+    flex: 1;
+    text-align: center;
+  }
+
+  .logout-btn {
+    width: 100%;
+  }
 }

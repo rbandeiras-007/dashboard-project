@@ -41,7 +41,7 @@
 
 <div class="container hidden" id="appContainer">
 <section class="header">
-  <div class="header-main">
+<div class="header-main">
   <div class="brand-block">
     <img src="assets/logo-gst.png" alt="General Solutions Tech" class="brand-logo" />
 
@@ -52,6 +52,15 @@
         Monitorização operacional com indicadores em tempo real de faturação,
         SLA, backlog, desempenho técnico e risco.
       </p>
+
+      <div class="header-tabs">
+        <button class="tab-btn active" data-tab="executive" id="tabExecutive">
+          📊 Dashboard Executivo
+        </button>
+        <button class="tab-btn" data-tab="technical" id="tabTechnical">
+          🛠 Dashboard Técnico
+        </button>
+      </div>
     </div>
   </div>
 
@@ -64,14 +73,7 @@
       </div>
     </div>
 
-    <div class="toolbar">
-      <div class="tabs">
-        <button class="tab-btn active" data-tab="executive" id="tabExecutive">Dashboard Executivo</button>
-        <button class="tab-btn" data-tab="technical" id="tabTechnical">Dashboard Técnico</button>
-      </div>
-
-      <button id="logoutBtn" class="logout-btn">Terminar sessão</button>
-    </div>
+    <button id="logoutBtn" class="logout-btn">Terminar sessão</button>
   </div>
 </div>
 

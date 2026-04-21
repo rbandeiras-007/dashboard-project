@@ -1,5 +1,16 @@
 
 const API_BASE = 'https://dashboard-backend-ak2g.onrender.com/api';
+// 🔧 CONFIGURAÇÃO DO CLIENTE (branding dinâmico)
+const CLIENT_CONFIG = {
+  companyName: 'General Solutions Tech',
+  legalName: 'General Solutions Tech, Lda.',
+  logoPath: 'assets/logo-gst.png',
+  primaryColor: '#0f2f57',
+  primaryAccent: '#6f8fd6',
+  supportPhone: '+351 253 879 030',
+  address: 'Rua 25 de Abril, 46, 4740-012 Antas - Esposende'
+};
+
 Chart.register(ChartDataLabels);
 
 const state = {
@@ -91,6 +102,23 @@ function showLoading() {
 
 function hideLoading() {
   document.getElementById('loadingOverlay')?.classList.add('hidden');
+}
+
+function setKpiSkeleton(ids) {
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.add('skeleton');
+    el.textContent = '0000';
+  });
+}
+
+function clearKpiSkeleton(ids) {
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.remove('skeleton');
+  });
 }
 
 function playAlertBeep() {
@@ -538,6 +566,7 @@ async function loadExecutive() {
     if (!auth.authenticated || !['admin', 'gestao'].includes(auth.user.role)) {
       throw new Error('Sem permissão para o dashboard executivo.');
     }
+  clearKpiSkeleton(['kpiRevenue', 'kpiOrders', 'kpiBillingRate', 'kpiLateOrders', 'kpiClients']);
 
     const f = getFilters();
 
@@ -598,6 +627,27 @@ async function loadExecutive() {
   } finally {
     hideLoading();
   }
+  clearKpiSkeleton(['kpiRevenue', 'kpiOrders', 'kpiBillingRate', 'kpiLateOrders', 'kpiClients']);
+
+}
+
+function filterTable(tableSelector, searchValue) {
+  const rows = document.querySelectorAll(`${tableSelector} tbody tr`);
+  const term = searchValue.trim().toLowerCase();
+
+  rows.forEach(row => {
+    const text = row.textContent.toLowerCase();
+    row.style.display = text.includes(term) ? '' : 'none';
+  });
+}
+
+function setupTableSearch(inputId, tableSelector) {
+  const input = document.getElementById(inputId);
+  if (!input) return;
+
+  input.addEventListener('input', () => {
+    filterTable(tableSelector, input.value);
+  });
 }
 
 async function loadTechnical() {
@@ -827,6 +877,8 @@ if (highCard) {
   } finally {
     hideLoading();
   }
+  clearKpiSkeleton(['kpiActiveProjects', 'kpiAtRiskProjects', 'kpiCriticalAlerts', 'kpiHighAlerts', 'kpiSlaRate', 'kpiBacklog']);
+
 }
 
 function setTab(tab) {
@@ -835,12 +887,24 @@ function setTab(tab) {
   const executiveView = document.getElementById('executiveView');
   const technicalView = document.getElementById('technicalView');
 
+  const animateIn = (el) => {
+    if (!el) return;
+    el.classList.add('is-entering');
+    requestAnimationFrame(() => {
+      el.classList.remove('is-entering');
+    });
+  };
+
   if (executiveView) {
-    executiveView.classList.toggle('hidden', tab !== 'executive');
+    const willShow = tab === 'executive';
+    executiveView.classList.toggle('hidden', !willShow);
+    if (willShow) animateIn(executiveView);
   }
 
   if (technicalView) {
-    technicalView.classList.toggle('hidden', tab !== 'technical');
+    const willShow = tab === 'technical';
+    technicalView.classList.toggle('hidden', !willShow);
+    if (willShow) animateIn(technicalView);
   }
 
   document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -930,18 +994,25 @@ async function loginRequest(email, password) {
   return data;
 }
 
+let cachedUser = null;
+
 async function fetchMe() {
-  const res = await fetch(`${API_BASE}/me`, {
-    credentials: 'include'
-  });
+  if (cachedUser) return cachedUser;
 
-  const data = await res.json();
+  try {
+    const res = await fetch(`${API_BASE}/me`, {
+      credentials: 'include'
+    });
 
-  if (!res.ok) {
+    if (!res.ok) return { authenticated: false };
+
+    const data = await res.json();
+    cachedUser = data;
+    return data;
+
+  } catch {
     return { authenticated: false };
   }
-
-  return data;
 }
 
 async function logoutRequest() {
@@ -991,6 +1062,32 @@ function showLoginScreen() {
   if (logoutBtn) logoutBtn.classList.add('hidden');
 }
 
+function applyClientBranding() {
+  const companyEl = document.getElementById('brandCompanyName');
+  const logoEl = document.querySelector('.brand-logo');
+
+  if (companyEl) {
+    companyEl.textContent = CLIENT_CONFIG.companyName;
+  }
+
+  if (logoEl) {
+    logoEl.src = CLIENT_CONFIG.logoPath;
+  }
+
+  // cor dinâmica
+  document.documentElement.style.setProperty('--primary', CLIENT_CONFIG.primaryColor);
+
+  const legalEl = document.getElementById('brandLegalName');
+  const phoneEl = document.getElementById('brandPhone');
+
+  if (legalEl) legalEl.textContent = CLIENT_CONFIG.legalName;
+  if (phoneEl) phoneEl.textContent = CLIENT_CONFIG.supportPhone;
+
+  document.documentElement.style.setProperty('--primary', CLIENT_CONFIG.primaryColor);
+  document.documentElement.style.setProperty('--primary-accent', CLIENT_CONFIG.primaryAccent);
+  
+}
+
 function formatRoleName(role) {
   if (role === 'admin') return 'Administrador';
   if (role === 'gestao') return 'Gestão';
@@ -999,6 +1096,14 @@ function formatRoleName(role) {
 }
 
 function renderLoggedUser(user) {
+
+  const avatarEl = document.getElementById('userAvatar');
+
+  if (avatarEl) {
+    const source = user.full_name || user.email || 'G';
+    avatarEl.textContent = source.trim().charAt(0).toUpperCase();
+  }
+
   const userNameEl = document.getElementById('loggedUserName');
   const userRoleEl = document.getElementById('loggedUserRole');
 
@@ -1033,6 +1138,13 @@ document.getElementById('loginBtn')?.addEventListener('click', async () => {
 
     await loadFilters();
 
+    if (result.user.role === 'admin' || result.user.role === 'gestao') {
+      setKpiSkeleton(['kpiRevenue', 'kpiOrders', 'kpiBillingRate', 'kpiLateOrders', 'kpiClients']);
+    }
+    if (result.user.role === 'admin' || result.user.role === 'tecnico') {
+      setKpiSkeleton(['kpiActiveProjects', 'kpiAtRiskProjects', 'kpiCriticalAlerts', 'kpiHighAlerts', 'kpiSlaRate', 'kpiBacklog']);
+    }
+
     if (result.user.role === 'admin') {
       await loadExecutive();
     } else if (result.user.role === 'gestao') {
@@ -1052,6 +1164,7 @@ document.getElementById('logoutBtn')?.addEventListener('click', async () => {
   try {
     showLoading();
     await logoutRequest();
+    cachedUser = null;
     window.location.reload();
   } finally {
     hideLoading();
@@ -1060,6 +1173,48 @@ document.getElementById('logoutBtn')?.addEventListener('click', async () => {
 
 document.getElementById('btnExportExcel')?.addEventListener('click', () => {
   window.open(`${API_BASE}/export/executive-excel`, '_blank');
+});
+
+document.getElementById('btnImportExcel')?.addEventListener('click', () => {
+  document.getElementById('fileInput').click();
+});
+
+document.getElementById('fileInput')?.addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const formData = new FormData();
+  formData.append('file', file);
+
+  try {
+    showLoading();
+
+    const res = await fetch(`${API_BASE}/import-excel`, {
+      method: 'POST',
+      credentials: 'include',
+      body: formData
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.error || 'Erro ao importar');
+
+    alert('Importação concluída com sucesso!');
+
+    // reload dashboards
+    const auth = await fetchMe();
+    if (auth.user.role === 'admin' || auth.user.role === 'gestao') {
+      await loadExecutive();
+    }
+    if (auth.user.role === 'admin' || auth.user.role === 'tecnico') {
+      await loadTechnical();
+    }
+
+  } catch (err) {
+    alert(err.message);
+  } finally {
+    hideLoading();
+  }
 });
 
 document.getElementById('btnExportPdf')?.addEventListener('click', () => {
@@ -1088,12 +1243,20 @@ document.getElementById('toggleAlertSound')?.addEventListener('click', () => {
 async function init() {
   try {
     showLoading();
+    applyClientBranding();
 
     const auth = await fetchMe();
 
     if (auth.authenticated) {
       applyRolePermissions(auth.user);
       await loadFilters();
+   
+    if (auth.user.role === 'admin' || auth.user.role === 'gestao') {
+      setKpiSkeleton(['kpiRevenue', 'kpiOrders', 'kpiBillingRate', 'kpiLateOrders', 'kpiClients']);
+    }
+    if (auth.user.role === 'admin' || auth.user.role === 'tecnico') {
+      setKpiSkeleton(['kpiActiveProjects', 'kpiAtRiskProjects', 'kpiCriticalAlerts', 'kpiHighAlerts', 'kpiSlaRate', 'kpiBacklog']);
+    }
 
       if (auth.user.role === 'admin') {
         await loadExecutive();

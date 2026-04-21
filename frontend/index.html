@@ -41,56 +41,59 @@
 
 <div class="container hidden" id="appContainer">
 <section class="header">
-  <div class="header-top">
-    <div class="brand-block">
-      <img src="assets/logo-demo.png" alt="Logo da empresa" class="brand-logo" />
+  <div class="header-main">
+  <div class="brand-block">
+    <img src="assets/logo-gst.png" alt="General Solutions Tech" class="brand-logo" />
 
-      <div class="brand-text">
-        <div class="brand-company" id="brandCompanyName">Empresa Cliente Demo</div>
-        <h1>Dashboard Operacional e Técnico</h1>
-        <p>
-          Visão executiva e técnica com indicadores operacionais, faturação, SLA, backlog e risco.
-          Estrutura preparada para ligação segura a PostgreSQL através de API.
-        </p>
-      </div>
+    <div class="brand-text">
+      <div class="brand-company" id="brandCompanyName">General Solutions Tech</div>
+      <h1>Plataforma de Gestão Operacional</h1>
+      <p>
+        Monitorização operacional com indicadores em tempo real de faturação,
+        SLA, backlog, desempenho técnico e risco.
+      </p>
     </div>
+  </div>
 
+  <div class="header-right">
     <div class="user-panel">
-      <div class="user-avatar" id="userAvatar">U</div>
-
+      <div class="user-avatar" id="userAvatar">G</div>
       <div class="user-info">
         <div class="user-name" id="loggedUserName">—</div>
         <div class="user-role" id="loggedUserRole">—</div>
       </div>
     </div>
-  </div>
 
-  <div class="header-actions">
-    <div class="tabs">
-      <button class="tab-btn active" data-tab="executive" id="tabExecutive">
-        <span class="tab-icon">📊</span>
-        <span class="tab-label">Dashboard Executivo</span>
-      </button>
+    <div class="toolbar">
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="executive" id="tabExecutive">Dashboard Executivo</button>
+        <button class="tab-btn" data-tab="technical" id="tabTechnical">Dashboard Técnico</button>
+      </div>
 
-      <button class="tab-btn" data-tab="technical" id="tabTechnical">
-        <span class="tab-icon">🛠</span>
-        <span class="tab-label">Dashboard Técnico</span>
-      </button>
+      <button id="logoutBtn" class="logout-btn">Terminar sessão</button>
     </div>
-
-    <button id="logoutBtn" class="logout-btn">Terminar sessão</button>
   </div>
+</div>
+
 </section>
 
   <div class="export-actions">
-   <button id="btnExportExcel" style="background:#1d4ed8; color:white; border:none; padding:10px 16px; border-radius:10px; cursor:pointer; font-weight:600;">
-    Exportar Excel
-   </button>
 
-   <button id="btnExportPdf" style="background:#0f172a; color:white; border:none; padding:10px 16px; border-radius:10px; cursor:pointer; font-weight:600;">
-    Exportar PDF
-   </button>
- </div>
+    <input type="file" id="fileInput" accept=".xlsx,.xls" style="display:none" />
+
+    <button id="btnImportExcel" style="background:#059669; color:white; border:none; padding:10px 16px; border-radius:10px; cursor:pointer; font-weight:600;">
+      Importar Excel
+    </button>
+
+    <button id="btnExportExcel" style="background:#1d4ed8; color:white; border:none; padding:10px 16px; border-radius:10px; cursor:pointer; font-weight:600;">
+      Exportar Excel
+    </button>
+
+    <button id="btnExportPdf" style="background:#0f172a; color:white; border:none; padding:10px 16px; border-radius:10px; cursor:pointer; font-weight:600;">
+      Exportar PDF
+    </button>
+
+  </div>
 
     <section class="filter-card">
       <div class="section-title">Filtros Globais</div>
@@ -130,7 +133,7 @@
       </div>
     </section>
 
-    <div id="executiveView">
+    <div id="executiveView" class="view-panel">
       <div class="section-title">Visão Executiva</div>
       <section class="kpi-grid">
         <div class="card"><div class="label">Faturação Total</div><div class="value" id="kpiRevenue">—</div><div class="hint">Valor total de encomendas</div></div>
@@ -168,16 +171,18 @@
           <input type="text" id="exceptionsSearch" class="table-search" placeholder="Pesquisar na tabela..." />
         </div>
 
+      <div class="table-scroll">
         <table id="exceptionsTable">
           <thead>
             <tr><th>ID</th><th>Cliente</th><th>Estado</th><th>Valor</th><th>Data prevista</th><th>Dias atraso</th></tr>
           </thead>
           <tbody id="exceptionsTableBody"></tbody>
         </table>
+        </div>
       </section>
     </div>
 
-    <div id="technicalView" class="hidden">
+    <div id="technicalView" class="view-panel hidden">
       <div class="section-title">Visão Técnica</div>
 
       <div id="technicalAlertsBanner" class="alerts-banner hidden">
@@ -255,16 +260,21 @@
           <input type="text" id="riskProjectsSearch" class="table-search" placeholder="Pesquisar na tabela..." />
         </div>
 
+      <div class="table-scroll">
         <table id="riskProjectsTable">
           <thead>
             <tr><th>ID</th><th>Projeto</th><th>Cliente</th><th>Técnico</th><th>Estado</th><th>Risco</th><th>%</th><th>Dias atraso</th><th>Motivo</th></tr>
           </thead>
           <tbody></tbody>
         </table>
-      </section>
-    </div>
+      </div>
+    </section>
+  </div>
 
-    <div class="footer-note">Arquitetura recomendada: Frontend HTML → API Backend → PostgreSQL. Projeto preparado para adaptação ao modelo de dados real do cliente.</div>
+  <div class="footer-note">
+    Solução preparada para integração com PostgreSQL |
+    <span id="brandLegalName">General Solutions Tech, Lda.</span> |
+    <span id="brandPhone">+351 253 879 030</span>
   </div>
 
   <script src="app.js"></script>
